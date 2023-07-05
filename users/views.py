@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserSerializer
-from django.contrib.auth.models import User
+from users.models import User
+from rest_framework import generics
+
 
 class UserRegistrationView(APIView):
     def post(self, request):
@@ -22,8 +24,5 @@ class UserRegistrationView(APIView):
             return Response(serialized_user.data)
         return Response(serializer.errors, status=400)
 
-# class RegisterView(generics.CreateAPIView):
-#     queryset = User.objects.all()
-#     permission_classes = (AllowAny,)
-#     serializer_class = RegisterSerializer
+
 

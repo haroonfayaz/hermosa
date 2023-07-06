@@ -1,28 +1,28 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .serializers import UserSerializer
+from django.views import View
 from users.models import User
-from rest_framework import generics
+from users.forms import UserRegistrationForm
+from django.shortcuts import redirect,render
+from django.views.generic import TemplateView
 
+class HomeView(TemplateView):
+    template_name='home.html'
 
-class UserRegistrationView(APIView):
+class UserRegistrationView(View):
+    def get(self, request):
+        form = UserRegistrationForm()
+        return render(request,'home.html', {'form': form})
+
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            # Create a new User instance with the validated data
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
             user = User.objects.create_user(
-                username=serializer.validated_data['email'],
-                password=request.data['password']
+                username=form.cleaned_data['email'],
+                password=form.cleaned_data['password']
             )
-            # Save additional fields from the serializer
-            user.name = serializer.validated_data['name']
-            user.contact = serializer.validated_data['contact']
-            user.travel_date = serializer.validated_data['travel_date']
+            user.name = form.cleaned_data['name']
+            user.contact = form.cleaned_data['contact']
             user.save()
-            # Serialize the user data
-            serialized_user = UserSerializer(user)
-            return Response(serialized_user.data)
-        return Response(serializer.errors, status=400)
-
+            return redirect('registration_success')
+        return render(request, 'home.html', {'form': form})
 
 

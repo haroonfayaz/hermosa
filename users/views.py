@@ -1,28 +1,25 @@
-from django.views import View
-from users.models import User
 from users.forms import UserRegistrationForm
-from django.shortcuts import redirect,render
+from django.shortcuts import redirect
 from django.views.generic import TemplateView
+from django.views.generic import FormView
+from django.urls import reverse_lazy
+from .forms import TravelBudForm
+from django.contrib import messages
 
 class HomeView(TemplateView):
-    template_name='home.html'
+    template_name='index.html'
 
-class UserRegistrationView(View):
-    def get(self, request):
-        form = UserRegistrationForm()
-        return render(request,'home.html', {'form': form})
+class UserRegistrationView(FormView):
+    template_name = 'index.html'
+    form_class = TravelBudForm
+    success_url = reverse_lazy('registration_success')
 
-    def post(self, request):
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['email'],
-                password=form.cleaned_data['password']
-            )
-            user.name = form.cleaned_data['name']
-            user.contact = form.cleaned_data['contact']
-            user.save()
-            return redirect('registration_success')
-        return render(request, 'home.html', {'form': form})
+    def form_valid(self, form):
+        user = form.save()
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse_lazy('home')
+
 
 

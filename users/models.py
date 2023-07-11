@@ -16,17 +16,20 @@ class TravelBud(models.Model):
     email = models.EmailField()
     contact = models.CharField(max_length=15, validators=[MinLengthValidator(10)])
     travel_date = models.DateField()
-    stay_duration = models.PositiveIntegerField(null=True)
     city = models.CharField(max_length=100)
     adult = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    children = models.PositiveIntegerField(validators=[MinValueValidator(0)])
-
-    def __str__(self):
-        return self.name
+    children = models.PositiveIntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
     
     class Meta:
         db_table = 'Travelers'
 
+class Destination(models.Model):
+    name= models.CharField(max_length=255)
+    description =models.CharField(max_length=3555)
+    image_url =models.CharField(max_length=2083)
 
-    def __str__(self):
-        return self.name
+    class Meta:
+        db_table ="Destination"
+
+
+ 
